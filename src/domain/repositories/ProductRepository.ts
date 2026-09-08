@@ -1,4 +1,4 @@
-import type { Product, CreateProductPayload, UpdateProductPayload } from '../models/product';
+import type { Product, CreateProductPayload, UpdateProductPayload } from '../models/Product';
 
 // PUERTO (Port): Esto define un "contrato" o interfaz pura de negocio.
 export interface ProductRepository {
