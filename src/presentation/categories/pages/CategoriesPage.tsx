@@ -2,19 +2,35 @@ import { useState } from 'react';
 import { useCategories } from '../hooks/useCategories';
 import { CategoryList } from '../components/CategoryList';
 import { CategoryFormDialog } from '../components/CategoryFormDialog';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
+import { useToast } from '../../../components/ui/Toast';
 import type { Category } from '../../../domain/models/Category';
 import { Plus } from 'lucide-react';
 
 export default function CategoriesPage() {
-  // Utilizamos nuestro Hook. La vista se vuelve muy limpia.
   const { categories, loading, error, createCategory, updateCategory, deleteCategory } = useCategories();
+  const { showToast } = useToast();
   
-  // ESTADO LOCAL: Maneja si el modal está abierto o cerrado, y qué categoría se está editando
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
+  // ESTADO PARA MODAL DE CONFIRMACIÓN (Eliminar / Cambiar Estado)
+  const [confirmConfig, setConfirmConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: "danger" | "warning";
+    onConfirm: () => Promise<void>;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "danger",
+    onConfirm: async () => {},
+  });
+
   const handleOpenDialog = (category?: Category) => {
-    setEditingCategory(category || null); // Si mandan categoría, se guarda para editar. Si no, nulo para crear nueva.
+    setEditingCategory(category || null);
     setIsDialogOpen(true);
   };
 
@@ -24,20 +40,67 @@ export default function CategoriesPage() {
   };
 
   const handleSubmit = async (data: any) => {
-    if (editingCategory) {
-      await updateCategory(editingCategory.id, data);
-    } else {
-      await createCategory(data);
+    try {
+      if (editingCategory) {
+        await updateCategory(editingCategory.id, data);
+        showToast("Categoría actualizada correctamente", "success");
+      } else {
+        await createCategory(data);
+        showToast("Categoría creada exitosamente", "success");
+      }
+    } catch (error) {
+      showToast("Ocurrió un error al guardar", "error");
     }
+  };
+
+  const handleDeleteRequest = (id: string) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Eliminar Categoría",
+      message: "¿Estás seguro de que deseas eliminar esta categoría? Esta acción no se puede deshacer.",
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          await deleteCategory(id);
+          showToast("Categoría eliminada", "success");
+        } catch (error) {
+          showToast("No se pudo eliminar la categoría", "error");
+        } finally {
+          setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
+  };
+
+  const handleToggleStatusRequest = (category: Category) => {
+    const isDeactivating = category.isActive;
+    setConfirmConfig({
+      isOpen: true,
+      title: isDeactivating ? "Inactivar Categoría" : "Activar Categoría",
+      message: isDeactivating
+        ? `¿Estás seguro de inactivar "${category.name}"? Los productos no la mostrarán.`
+        : `¿Deseas volver a activar "${category.name}"?`,
+      type: "warning",
+      onConfirm: async () => {
+        try {
+          await updateCategory(category.id, { isActive: !category.isActive });
+          showToast(`Categoría ${isDeactivating ? "inactivada" : "activada"}`, "success");
+        } catch (error) {
+          showToast("Error al cambiar estado", "error");
+        } finally {
+          setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-slate-900">Categorías</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Categorías</h1>
         <button
           onClick={() => handleOpenDialog()}
-          className="flex items-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          className="flex items-center space-x-2 bg-primary text-primary-foreground text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Nueva Categoría</span>
@@ -45,17 +108,17 @@ export default function CategoriesPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-700 p-4 rounded-md border border-red-200">
+        <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-4 rounded-md border border-red-200 dark:border-red-800 flex items-center">
           {error}
         </div>
       )}
 
-      {/* Le pasamos (props) los datos y funciones al componente hijo */}
       <CategoryList
         categories={categories}
         loading={loading}
         onEdit={handleOpenDialog}
-        onDelete={deleteCategory}
+        onDelete={handleDeleteRequest}
+        onToggleStatus={handleToggleStatusRequest}
       />
 
       <CategoryFormDialog
@@ -63,6 +126,15 @@ export default function CategoriesPage() {
         onClose={handleCloseDialog}
         onSubmit={handleSubmit}
         initialData={editingCategory}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmConfig.isOpen}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        type={confirmConfig.type}
+        onConfirm={confirmConfig.onConfirm}
+        onCancel={() => setConfirmConfig((prev) => ({ ...prev, isOpen: false }))}
       />
     </div>
   );

@@ -34,7 +34,7 @@ export function Sidebar() {
             className={({ isActive }) =>
               cn(
                 'flex items-center space-x-3 p-3 rounded-lg transition-colors',
-                isActive ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800'
+                isActive ? 'bg-primary text-primary-foreground text-white' : 'hover:bg-slate-800'
               )
             }
           >

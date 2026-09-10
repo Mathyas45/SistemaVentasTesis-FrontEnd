@@ -19,7 +19,7 @@ export class ApiProductRepository implements ProductRepository {
   }
 
   async update(id: string, product: UpdateProductPayload): Promise<Product> {
-    return apiClient.put(`/products/${id}`, product);
+    return apiClient.patch(`/products/${id}`, product);
   }
 
   async delete(id: string): Promise<void> {

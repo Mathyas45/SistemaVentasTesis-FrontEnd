@@ -64,53 +64,56 @@ export function CategoryFormDialog({
   // Esto soluciona problemas visuales donde otras barras (como Navbar) se sobreponen por culpa de estilos de contenedores.
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-        <h2 className="text-xl font-bold mb-4">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-lg border dark:border-slate-800 w-full max-w-md p-6">
+        <h2 className="text-xl font-bold mb-4 text-slate-900 dark:text-slate-100">
           {initialData ? 'Editar Categoría' : 'Nueva Categoría'}
         </h2>
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700">Nombre</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Nombre</label>
             <input
               {...register('name')}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             {errors.name && <span className="text-xs text-red-500">{errors.name.message}</span>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Descripción</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Descripción</label>
             <textarea
               {...register('description')}
               rows={3}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             {errors.description && (
               <span className="text-xs text-red-500">{errors.description.message}</span>
             )}
           </div>
 
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              {...register('isActive')}
-              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-            />
-            <label className="ml-2 block text-sm text-slate-700">Activo</label>
+          <div className="flex items-center pt-2">
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                {...register("isActive")}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary text-primary-foreground"></div>
+              <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">Activo (Visible)</span>
+            </label>
           </div>
 
           <div className="mt-6 flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50"
+              className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
             >
               {isSubmitting ? 'Guardando...' : 'Guardar'}
             </button>

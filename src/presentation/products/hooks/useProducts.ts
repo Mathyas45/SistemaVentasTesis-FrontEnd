@@ -6,7 +6,7 @@ const repository = new ApiProductRepository();
 const productService = new ProductService(repository);
 
 export function useProducts() {
-    //primero declaramos los estados que vamos a usar en el hook
+  //primero declaramos los estados que vamos a usar en el hook
   const [products, setProducts] = useState<Product[]>([]);//products es un arreglo de productos, setProducts es una funcion que nos permite actualizar el estado de products
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
