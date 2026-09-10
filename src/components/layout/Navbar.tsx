@@ -3,6 +3,7 @@ import { toggleSidebar, toggleTheme } from '@/store/slices/uiSlice';
 import { Menu, UserCircle, Sun, Moon } from 'lucide-react';
 import type { RootState } from '@/store';
 
+//en este componente se encuentra la barra de navegación superior, que incluye un botón para abrir/cerrar el sidebar, un botón para cambiar entre modo oscuro y claro, y un área que muestra el nombre del usuario con un icono.
 export function Navbar() {
   const dispatch = useDispatch();
   const theme = useSelector((state: RootState) => state.ui.theme);

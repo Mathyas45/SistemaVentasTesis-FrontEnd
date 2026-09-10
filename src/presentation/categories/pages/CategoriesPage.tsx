@@ -97,7 +97,12 @@ export default function CategoriesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Categorías</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-slate-900 dark:text-slate-100">Categorías | 
+            <span className="text-sm font-semibold text-primary bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 px-4 py-2 rounded-full">
+             {categories.length}
+          </span>
+
+        </h1>
         <button
           onClick={() => handleOpenDialog()}
           className="flex items-center space-x-2 bg-primary text-primary-foreground text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
