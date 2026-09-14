@@ -4,8 +4,8 @@ export class ProductService {
 
     constructor(private readonly repository: ProductRepository) {}
 
-    async getAllProducts() {
-        return this.repository.getAll();
+    async getAllProducts(params?: { page?: number; limit?: number; search?: string; categoryId?: string }) {
+        return this.repository.getAll(params);
     }
 
     async getProductById(id: string) {

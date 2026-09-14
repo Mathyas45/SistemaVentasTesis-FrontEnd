@@ -6,59 +6,74 @@ const repository = new ApiProductRepository();
 const productService = new ProductService(repository);
 
 export function useProducts() {
-  //primero declaramos los estados que vamos a usar en el hook
-  const [products, setProducts] = useState<Product[]>([]);//products es un arreglo de productos, setProducts es una funcion que nos permite actualizar el estado de products
+  const [products, setProducts] = useState<Product[]>([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
-    try{
-      const data = await productService.getAllProducts();
-      setProducts(data);
+    try {
+      const result = await productService.getAllProducts({ page, limit: 10, search, categoryId });
+      setProducts(result.data || []);
+      setTotal(result.total || 0);
+      setTotalPages(result.totalPages || 1);
       setError(null);
-    }catch(err: any){
+    } catch(err: any) {
       setError(err.response?.data?.message || 'Error fetching products');
-    }finally{
+    } finally {
       setLoading(false);
     }
-    }, []);
+  }, [page, search, categoryId]);
 
-    const createProduct = async (data: CreateProductPayload) => {
-        try {
-            await productService.createProduct(data);
-            await fetchProducts();
-        } catch (err: any) {
-            throw new Error(err.response?.data?.message || 'Error creating product');
-        }
-    };
-    const updateProduct = async (id: string, data: UpdateProductPayload) => {
-        try {
-            await productService.updateProduct(id, data);
-            await fetchProducts();
-        } catch (err: any) {
-            throw new Error(err.response?.data?.message || 'Error updating product');
-        }
-    };
-    const deleteProduct = async (id: string) => {
-        try {
-            await productService.deleteProduct(id);
-            await fetchProducts();
-        } catch (err: any) {
-            throw new Error(err.response?.data?.message || 'Error deleting product');
-        }
-    };
+  const createProduct = async (data: CreateProductPayload) => {
+      try {
+          await productService.createProduct(data);
+          await fetchProducts();
+      } catch (err: any) {
+          throw new Error(err.response?.data?.message || 'Error creating product');
+      }
+  };
+  const updateProduct = async (id: string, data: UpdateProductPayload) => {
+      try {
+          await productService.updateProduct(id, data);
+          await fetchProducts();
+      } catch (err: any) {
+          throw new Error(err.response?.data?.message || 'Error updating product');
+      }
+  };
+  const deleteProduct = async (id: string) => {
+      try {
+          await productService.deleteProduct(id);
+          await fetchProducts();
+      } catch (err: any) {
+          throw new Error(err.response?.data?.message || 'Error deleting product');
+      }
+  };
+
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);//use effect es un hook que nos permite ejecutar una funcion cuando el componente se monta o cuando una variable cambia, en este caso queremos que se ejecute fetchProducts cuando el componente se monta
+  }, [fetchProducts]);
 
   return {
     products,
+    total,
+    totalPages,
+    page,
+    setPage,
+    search,
+    setSearch,
+    categoryId,
+    setCategoryId,
     loading,
     error,
     createProduct,
     updateProduct,
     deleteProduct,
     refresh: fetchProducts,
-  };//retornamos un objeto con los estados y las funciones que vamos a usar en el componente que use este hook
+  };
 }

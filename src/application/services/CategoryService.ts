@@ -7,8 +7,8 @@ import type { CreateCategoryPayload, UpdateCategoryPayload } from '../../domain/
 export class CategoryService {
   constructor(private readonly repository: CategoryRepository) {}
 
-  async getAllCategories() {
-    return this.repository.getAll();
+  async getAllCategories(params?: { page?: number; limit?: number; search?: string }) {
+    return this.repository.getAll(params);
   }
 
   async getCategory(id: string) {

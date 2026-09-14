@@ -24,7 +24,7 @@ export function ProductList({ products, loading, onEdit, onDelete, onToggleStatu
     <div className="bg-white dark:bg-slate-900 rounded-lg border dark:border-slate-800 shadow-sm transition-colors">
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left text-slate-500 dark:text-slate-400">
-          <thead className="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-800/50 border-b dark:border-slate-800">
+          <thead className="text-xs text-primary-foreground uppercase bg-primary border-b border-primary/20">
             <tr>
                 <th className="px-6 py-3">Nombre</th>
                 <th className="px-6 py-3">Código</th>
@@ -91,4 +91,5 @@ export function ProductList({ products, loading, onEdit, onDelete, onToggleStatu
     </div>
   );
 }
+
 
